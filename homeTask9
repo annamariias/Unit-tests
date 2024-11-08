@@ -1,0 +1,228 @@
+package book;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class BookTestTest {
+    private BookTest bookTest;
+
+    @BeforeEach
+    void setUp() {
+        bookTest = new BookTest();
+        bookTest.addBook(new Book("1984","George Orwell","Fiction",1949));
+        bookTest.addBook(new Book("The Great Gatsby","F.Scott Fitzgerald","Fiction",1925));
+        bookTest.addBook(new Book("Pride and Prejudice","Jane Austen","Romance",1813));
+        bookTest.addBook(new Book("Moby-Dick","Herman Melville","Fiction",1851));
+        bookTest.addBook(new Book("The Alchemist","Paulo Coelho","Fiction",1988));
+        bookTest.addBook(new Book("The Lord of the Rings", "J.R.R. Tolkien","Fantasy",1954));
+    }
+
+    @AfterEach
+    void tearDown() {
+    }
+
+    @Test
+    void testAddBookPossitive() {
+        Book book = new Book("Dear Friend","Guy de Maupassant","Romance",1885);
+        bookTest.addBook(book);
+        assertEquals(7, bookTest.bookSize());
+    }
+
+    @Test
+    void testAddBookNull(){
+        assertThrows(IllegalArgumentException.class, ()-> bookTest.addBook(null));
+
+    }
+
+    @Test
+    void addBookDublicate(){
+        Book dublicate = new Book("The Alchemist","Paulo Coelho","Fiction",1988);
+        assertThrows(IllegalArgumentException.class, () -> bookTest.addBook(dublicate));
+    }
+
+
+
+    @Test
+    void listOgAuthors() {
+        List <String> authors = bookTest.listOgAuthors();
+        assertEquals(6, authors.size());
+        assertTrue(authors.contains("George Orwell"));
+    }
+
+   @Test
+   void listAuthorsNegative(){
+        List <String> authors = bookTest.listOgAuthors();
+        assertNotEquals(10, authors.size());
+    }
+
+
+
+   @Test
+    void removeBookPositive(){
+        bookTest.removeBook("George Orwell");
+        assertEquals(5,bookTest.bookSize());
+
+    }
+
+   @Test
+   void removeBookNegat(){
+        bookTest.removeBook("Jane Austen");
+        assertNotEquals(6,bookTest.bookSize());
+    }
+
+    @Test
+    void removeBookNegative(){
+      assertThrows(IllegalArgumentException.class, () -> bookTest.removeBook(null));
+    }
+
+    @Test
+    void listAuthorsByGenrePositive(){
+        List<String> listAuthorsByGenre = bookTest.listAuthorsByGenre("Fiction");
+        assertEquals(4,listAuthorsByGenre.size());
+    }
+
+    @Test
+    void listAuthorsByGenreNegative(){
+        List<String> listAuthorsByGenre = bookTest.listAuthorsByGenre("Fiction");
+        assertNotEquals(3,listAuthorsByGenre.size());
+    }
+
+
+   @Test
+   void listOfAuthorsByGenreIsEmpty(){
+        assertThrows(IllegalArgumentException.class, () -> bookTest.listAuthorsByGenre(null));
+    }
+
+
+
+    @Test
+    void subcolectionOfBooksPositive(){
+        List<Book> result = bookTest.subcollectionsOfBooksByGenre("Romance");
+        assertNotNull(result);
+        assertEquals(1,result.size());
+     }
+
+
+    @Test
+    void subcolectionOfBookNegative(){
+        List<Book> result = bookTest.subcollectionsOfBooksByGenre("Detective");
+        assertTrue(result.isEmpty());
+     }
+
+
+     @Test
+     void subcolectionIsNull(){
+        assertThrows(IllegalArgumentException.class, () -> bookTest.subcollectionsOfBooksByGenre(null));
+
+     }
+
+     @Test
+    void listAuthorByYearPositive(){
+        List<String>authorsByYear = bookTest.listAuthorsByYear(1954);
+        assertEquals(1,authorsByYear.size());
+     }
+
+     @Test
+    void listAuthorsByYearNegative(){
+        assertThrows(IllegalArgumentException.class, ()->bookTest.listAuthorsByYear(-1));
+     }
+     @Test
+    void listAuthorsByYearNotExistYear(){
+        List<String> authorsByYear = bookTest.listAuthorsByYear(2024);
+        assertTrue(authorsByYear.isEmpty());
+     }
+
+     @Test
+    void sortedBooks(){
+        List<Book> sortedBooks = bookTest.sortCollectionByYear();
+        assertEquals(6, sortedBooks.size());
+
+        assertEquals(1813,sortedBooks.get(0).getYear());
+        assertEquals(1988,sortedBooks.get(5).getYear());
+     }
+
+    @Test
+    void sortedBooksFalse(){
+        List<Book> sortedBooks = bookTest.sortCollectionByYear();
+        assertNotEquals(1949, sortedBooks.get(0).getYear());
+
+    }
+
+    @Test
+    void findBookByAuthor(){
+        Optional<Book> bookByAuthor = bookTest.findBookByAuthor("Herman Melville");
+        assertTrue(bookByAuthor.isPresent());
+
+        assertEquals("Moby-Dick",bookByAuthor.get().getTitle());
+
+    }
+   @Test
+   void findBookByAuthorIsNull(){
+        assertThrows(IllegalArgumentException.class,() -> bookTest.findBookByAuthor(null));
+
+    }
+
+    @Test
+    void findBookByAuthorEmpty(){
+        Optional<Book> bookByAuthor = bookTest.findBookByAuthor("Draiser");
+        assertTrue(bookByAuthor.isEmpty());
+    }
+
+    @Test
+    void findBookByYearPositive(){
+        Optional<Book> bookByYear = bookTest.findBookByYear(1851);
+        assertTrue(bookByYear.isPresent());
+
+        assertEquals("Moby-Dick", bookByYear.get().getTitle());
+    }
+    @Test
+    void findBookByYearNotValid(){
+        assertThrows(IllegalArgumentException.class, ()->bookTest.findBookByYear(-200));
+    }
+
+    @Test
+    void findBookByYearEmpty(){
+        Optional<Book> bookByYear = bookTest.findBookByYear(2024);
+        assertTrue(bookByYear.isEmpty());
+    }
+
+    @Test
+    void findBookByGenre(){
+        Optional<Book> bookByGenre = bookTest.findBookByGenre("Fiction");
+        assertEquals("1984",bookByGenre.get().getTitle());
+
+    }
+
+    @Test
+    void findBookByGenreNegative(){
+        assertThrows(IllegalArgumentException.class, ()->bookTest.findBookByGenre(null));
+    }
+    @Test
+    void findBookByGenreEmpty(){
+        Optional<Book> bookByGenre = bookTest.findBookByGenre("Classic");
+        assertTrue(bookByGenre.isEmpty());
+    }
+
+    @Test
+    void mergeTwoBooks(){
+        List<Book> list1 = List.of(new Book("The Alchemist","Paulo Coelho","Fiction",1988),new Book("The Great Gatsby","F.Scott Fitzgerald","Fiction",1925));
+        List<Book> list2 = List.of(new Book("1984","George Orwell","Fiction",1949));
+        List<Book> mergedList = bookTest.mergedBooksFromTwoCollections(list1,list2);
+        assertEquals(3,mergedList.size());
+        assertEquals("The Alchemist",mergedList.get(0).getTitle());
+        assertEquals("1984",mergedList.get(2).getTitle());
+    }
+
+    @Test
+    void mergeTwoBooksNegative(){
+        assertThrows(NullPointerException.class, () -> bookTest.mergedBooksFromTwoCollections(null,null));
+    }
+}
