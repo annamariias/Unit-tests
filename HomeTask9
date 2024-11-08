@@ -1,0 +1,133 @@
+package book;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+public class BookTest {
+
+    private List<Book> books = new ArrayList<>();
+    private List<Book> books2 = new ArrayList<>();
+
+    public void addBook(Book book) {
+        if (book == null) throw new IllegalArgumentException("Book cannot be empty");
+        if (books.stream()
+                .anyMatch(b -> b.getTitle().equalsIgnoreCase(book.getTitle())
+                        && b.getAuthor().equalsIgnoreCase(book.getAuthor()))) {
+            throw new IllegalArgumentException("duplicated book");
+        }
+        books.add(book);
+
+    }
+
+    public List<Book> mergedBooksFromTwoCollections(List<Book> books1, List<Book> books2) {
+        List<Book> mergedList = new ArrayList<>(books1);
+        if (books1 == null && books2 == null) {
+            throw new NullPointerException("Two collections are empty");
+
+        }
+        mergedList.addAll(books2);
+        return mergedList;
+
+    }
+
+    public List<Book> subcollectionsOfBooksByGenre(String genre) {
+        if (genre == null){
+            throw new IllegalArgumentException("genre cannot be null");
+        }
+        return books.stream()
+                .filter(book -> book.getGenre().equalsIgnoreCase(genre))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> listOgAuthors() {
+        if (books == null) {
+            throw new IllegalArgumentException("collection is empty");
+        }
+        return books.stream()
+                .map(Book::getAuthor)
+                .distinct()
+                .collect(Collectors.toList());
+
+    }
+
+    public int bookSize() {
+        return books.size();
+    }
+
+    public void removeBook(String author) {
+        if (books == null || author == null) throw new IllegalArgumentException();
+        books.removeIf(book -> author.equals(book.getAuthor()));
+    }
+
+    public List<Book> sortCollectionByYear() {
+        if(books == null){
+            throw new IllegalArgumentException("collection is empty");
+        }
+
+        return books.stream()
+                .sorted(Comparator.comparingInt(Book::getYear))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> listAuthorsByGenre(String genre) {
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre must not be null");
+        }
+        return books.stream()
+                .filter(book -> genre.equals(book.getGenre()))
+                .map(Book::getAuthor)
+                .distinct()
+                .collect(Collectors.toList());
+
+    }
+
+    public int listAuthorsByGenreSize(String genre) {
+        return listAuthorsByGenre(genre).size();
+    }
+
+    public List<String> listAuthorsByYear(int year) {
+        if (year < 0) {
+            throw new IllegalArgumentException("Not valid year input");
+        }
+        return books.stream()
+                .filter(book -> book.getYear() == year)
+                .map(Book::getAuthor)
+                .collect(Collectors.toList());
+    }
+
+    public int listAuthorsByYearSize(int year) {
+        return listAuthorsByYear(year).size();
+    }
+
+    public Optional<Book> findBookByAuthor(String author) {
+        if (author == null) {
+            throw new IllegalArgumentException("author must not be null");
+        }
+        return books.stream()
+                .filter(book -> book.getAuthor().equalsIgnoreCase(author))
+                .findFirst();
+    }
+
+    public Optional<Book> findBookByYear(int year) {
+        if (year < 0) {
+            throw new IllegalArgumentException("not valid year");
+        }
+        return books.stream()
+                .filter(book -> book.getYear() == year)
+                .findFirst();
+    }
+
+    public Optional<Book> findBookByGenre(String genre) {
+        if (genre == null) {
+            throw new IllegalArgumentException("genre cannot be empty");
+        }
+        return books.stream()
+                .filter(book -> book.getGenre().equalsIgnoreCase(genre))
+                .findFirst();
+    }
+
+
+}
